@@ -19,14 +19,14 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
 
+import br.com.auditeste.bolsavalores.pages.BolsaValoresPage;
+
 /*
  * O JUnit ficarará encarregada pela estruturação dos casos de teste 
  **/
 public class AbrirNavegadorTest {
 
-	// interface que controla o navegador
-	private static WebDriver driver;
-
+	private BolsaValoresPage page = new BolsaValoresPage();
 	/*
 	 * Para determinar que um método vai ser executado antes dos demais métodos da
 	 * classe de teste utilizamos a anotação:
@@ -34,26 +34,47 @@ public class AbrirNavegadorTest {
 	 * método que é executado antes do teste. Normalmente, é nele que criamos uma
 	 * nova instância do navegador com o Selenium WebDriver, abrimos conexões com
 	 * bancos de
+	 * 
+	 * @BeforeClass public static void setUpBeforeClass() {} Para determinar que um
+	 * método vai ser executado depois dos demais métodos da classe de teste
+	 * utilizamos a anotação:
+	 * 
+	 * 
+	 * método que, ao final de todos os testes, é executado para encerrar uma
+	 * instância do navegador, fechar uma conexão com um banco de dados etc. Esse
+	 * método deve vir
+	 * 
+	 * 
+	 * @AfterClass public static void tearDownAfterClass() throws Exception {}
+	 * 
+	 * Para determinar que um método vai ser executado antes de cada caso de teste
+	 * utilizamos a anotação:
+	 * 
+	 * @Before public void setUp() throws Exception {}
+	 * 
+	 * Para determinar que um método vai ser executado depois de cada caso de teste
+	 * utilizamos a anotação:
+	 * 
+	 * @After public void tearDown() throws Exception { /// driver.close(); // fecha
+	 * a aba que ele usou // driver.quit(); // fecha a o navegador }
 	 */
 
 	@BeforeClass
-	public static void setUpBeforeClass() throws Exception {
+	public static void setUp() {
+		BolsaValoresPage.initializaPagina();
+	}
 
-		// alterando as configurações que já vem pre definidas
+	@AfterClass
+	public static void tearDown() {
+		BolsaValoresPage.finalizar();
+	}
 
-		System.setProperty("webdriver.chrome.driver", "C:\\chromedriver.exe");
-
-		driver = new ChromeDriver();
-
-		driver.get("https://br.investing.com/currencies/exchange-rates-table");
-
-		WebElement tabela = driver.findElement(By.cssSelector("#exchange_rates_1"));
-
-		List<WebElement> celulas = tabela.findElements(By.tagName("td"));
+	@Test
+	public void test() {
 
 		try {
 
-			File file = new File("C:\\\\Users\\\\Auditeste0151\\\\Desktop\\\\pdf + ferramentas\\\\BolsaValores.xlsx");
+			File file = new File("/home/vinicius/Desktop/CotacaoDolar/BolsaValores.xlsx");
 			// ler um arquivo
 
 			FileInputStream fos = new FileInputStream(file);
@@ -64,15 +85,15 @@ public class AbrirNavegadorTest {
 			// pega uma em especifico
 			XSSFSheet sheetMoedas = workbook.getSheetAt(0);
 
-		    PopulaExcel(celulas, sheetMoedas);
+			PopulaExcel(page.listarCelulas(), sheetMoedas);
 
-			//escreve no arquivo
+			// escreve no arquivo
 			FileOutputStream os = new FileOutputStream(file);
 			workbook.write(os);
 		}
 
 		catch (Exception e) {
-            System.out.println("Erro: " + e.getStackTrace());
+			System.out.println("Erro: " + e.getStackTrace());
 		}
 	}
 
@@ -93,7 +114,7 @@ public class AbrirNavegadorTest {
 			if (j == valores.length) {
 
 				Row r = sheetMoedas.createRow(row);
-				
+
 				for (int k = 0; k < valores.length; k++) {
 
 					org.apache.poi.ss.usermodel.Cell c = r.createCell(k);
@@ -106,41 +127,6 @@ public class AbrirNavegadorTest {
 				row++;
 			}
 		}
-	}
-
-	/*
-	 * Para determinar que um método vai ser executado depois dos demais métodos da
-	 * classe de teste utilizamos a anotação:
-	 * 
-	 * 
-	 * método que, ao final de todos os testes, é executado para encerrar uma
-	 * instância do navegador, fechar uma conexão com um banco de dados etc. Esse
-	 * método deve vir
-	 * 
-	 */
-	@AfterClass
-	public static void tearDownAfterClass() throws Exception {
-	}
-
-	// Para determinar que um método vai ser executado antes de cada caso de teste
-	// utilizamos a anotação:
-
-	@Before
-	public void setUp() throws Exception {
-	}
-
-	// Para determinar que um método vai ser executado depois de cada caso de teste
-	// utilizamos a anotação:
-
-	@After
-	public void tearDown() throws Exception {
-		/// driver.close(); // fecha a aba que ele usou
-		// driver.quit(); // fecha a o navegador
-	}
-
-	@Test
-	public void test() {
-
 	}
 
 }
