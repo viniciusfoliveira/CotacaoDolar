@@ -1,4 +1,4 @@
-#Cotação Dolar
+Cotação Dolar
 
 Trata-se de uma aplicação java que automatiza uma tarefa de olhar a cotação do dolar e coloca os elementos em uma planilha.
 
